@@ -1,6 +1,6 @@
 {
   "name": "nmrsw-student-buddy",
-  "homepage": "https://nmrswstudentcouncil.github.io/nmrswscstudentbuddy/",
+  "homepage": "https://nmrswscstudentbuddy.vercel.app/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
