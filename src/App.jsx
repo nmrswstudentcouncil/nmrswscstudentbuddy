@@ -435,7 +435,7 @@ export default function App() {
               )}
             </div>
           </div>
-        </div>
+        </div>s
       )}
 
       {/* ===== DETAIL PAGE ===== */}
@@ -523,7 +523,7 @@ export default function App() {
           </div>
           <div className="auth-content">
             <div className="auth-card">
-              <div className="auth-logo"><h2>สมัครสมาชิกฟรี</h2><p style={{ color: 'var(--text2)', fontSize: '0.95rem' }}>กรุณากรอกข้อมูลเพื่อสร้างบัญชีผู้ใช้ใหม่</p></div>
+              <div className="auth-logo"><h2>สมัครสมาชิก</h2><p style={{ color: 'var(--text2)', fontSize: '0.95rem' }}>กรุณากรอกข้อมูลเพื่อสร้างบัญชีผู้ใช้ใหม่</p></div>
               <div className="step-bar" style={{ marginBottom: '2rem' }}><div className={`step ${regStep >= 1 ? 'active' : ''} ${regStep > 1 ? 'done' : ''}`}></div><div className={`step ${regStep >= 2 ? 'active' : ''} ${regStep > 2 ? 'done' : ''}`}></div><div className={`step ${regStep === 3 ? 'active done' : ''}`}></div></div>
 
               {regStep === 1 && (
