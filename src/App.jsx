@@ -3,8 +3,7 @@ import { supabase } from './supabaseClient';
 import { 
   School, Home, Settings, LogIn, UserPlus, LogOut, Search, 
   BookOpen, GraduationCap, FileText, PlayCircle, Star, 
-  Save, AlertCircle, CheckCircle, Info, FileVideo, ArrowLeft,
-  Users, Building2, Briefcase
+  Save, AlertCircle, CheckCircle, Info, FileVideo, ArrowLeft
 } from 'lucide-react';
 import './App.css';
 
@@ -17,14 +16,13 @@ const UNIVERSITY_LIST = [
   "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ", "มหาวิทยาลัยบูรพา", "มหาวิทยาลัยพะเยา", "อื่นๆ"
 ];
 
-// 🔴 ปรับโทนสีสุ่มของอวาตาร์ให้เป็นกลุ่มสีแดงเข้ม ชมพู เทา ดำ เพื่อให้เข้ากับธีมโรงเรียน
-const COLORS = ['#991b1b', '#7f1d1d', '#b91c1c', '#475569', '#334155', '#1e293b', '#be123c', '#e11d48'];
+const COLORS = ['#E53935', '#880E4F', '#4A148C', '#B71C1C', '#004D40', '#E65100', '#F5C842', '#1ABFA0'];
 const getRandomColor = () => COLORS[Math.floor(Math.random() * COLORS.length)];
 
 const getYouTubeEmbedUrl = (url) => {
   if (!url) return '';
   let videoId = '';
-  if (url.includes('youtube.com/watch')) {
+  if (url.includes('youtube.com/watch?v=')) {
     videoId = url.split('v=')[1].split('&')[0];
   } else if (url.includes('youtu.be/')) {
     videoId = url.split('youtu.be/')[1].split('?')[0];
@@ -201,7 +199,7 @@ export default function App() {
         const { data, error } = await supabase.from('portfolios').insert([payload]).select();
         if (error) throw error;
         
-        const userObj = { name: regUsername, role: regRole, grade: regRole === 'student' ? regGrade : '', gen: regRole === 'alumni' ? regGen : '', school: 'สตรีวิทยา ๓', email: regEmail };
+        const userObj = { name: regUsername, role: regRole, grade: regGrade, gen: regGen, school: 'สตรีวิทยา ๓', email: regEmail };
         localStorage.setItem('isLoggedIn', 'true'); localStorage.setItem('currentUser', JSON.stringify(userObj));
         if (data && data.length > 0) { setPortfolioId(data[0].id); localStorage.setItem('portfolioId', data[0].id.toString()); }
 
@@ -261,68 +259,34 @@ export default function App() {
 
       {/* ===== HOME PAGE ===== */}
       {page === 'home' && (
-         <div className="page active" style={{ padding: 0 }}>
-           
-         {/* แบนเนอร์หลักธีมแดง-ขาวประจำโรงเรียน */}
-         <div className="hero-modern">
+         <div className="page active">
+         <div className="hero">
            <h1>ค้นหาแนวทาง <span>รุ่นพี่ NMR.SW</span></h1>
-           <p>รวบรวมประสบการณ์จากพี่ๆ พร้อม Portfolio และคลิปแนะนำ ครอบคลุมทุกสายการเรียน ทั้งวิทย์-คณิต ศิลป์-คำนวณ และศิลป์-ภาษา</p>
+           <p style={{ marginBottom: 0 }}>รวบรวมประสบการณ์จากพี่ๆ พร้อม Portfolio และคลิปแนะนำ ครอบคลุมทุกสายการเรียน ทั้งวิทย์-คณิต ศิลป์-คำนวณ และศิลป์-ภาษา</p>
          </div>
          
-         {/* สถิติลอยตัว (Floating Stats) */}
-         <div className="stats-floating">
-           <div className="stat-card-modern">
-             <div className="icon-wrapper"><Users size={24} /></div>
-             <div className="stat-num">{portfoliosData.length}</div>
-             <div className="stat-label">ศิษย์เก่าที่แชร์ข้อมูล</div>
-           </div>
-           <div className="stat-card-modern">
-             <div className="icon-wrapper"><Building2 size={24} /></div>
-             <div className="stat-num">{new Set(portfoliosData.map(d => d.uni)).size}</div>
-             <div className="stat-label">มหาวิทยาลัย</div>
-           </div>
-           <div className="stat-card-modern">
-             <div className="icon-wrapper"><Briefcase size={24} /></div>
-             <div className="stat-num">{portfoliosData.filter(d => d.hasPort).length}</div>
-             <div className="stat-label">Portfolio ที่แชร์</div>
-           </div>
+         <div className="stats-strip">
+           <div className="stat"><div className="stat-num">{portfoliosData.length}</div><div className="stat-label">ศิษย์เก่าที่แชร์ข้อมูล</div></div>
+           <div className="stat"><div className="stat-num">{new Set(portfoliosData.map(d => d.uni)).size}</div><div className="stat-label">มหาวิทยาลัย</div></div>
+           <div className="stat"><div className="stat-num">{portfoliosData.filter(d => d.hasPort).length}</div><div className="stat-label">Portfolio ที่แชร์</div></div>
          </div>
 
-         <div className="main-content" style={{ marginTop: 0 }}>
-           {/* แถบค้นหาโมเดิร์นคลีน */}
-           <div className="search-container-modern">
-             <div className="field">
-               <label>ค้นหาคณะ / สาขา</label>
-               <input type="text" className="premium-input" placeholder="เช่น วิศวกรรมคอมพิวเตอร์..." value={searchText} onChange={e => setSearchText(e.target.value)} />
-             </div>
-             <div className="field">
+         <div className="main-content">
+           <div className="filter-bar">
+             <div><label>ค้นหาคณะ / สาขา</label><input type="text" className="premium-input" placeholder="เช่น วิศวกรรมคอมพิวเตอร์..." value={searchText} onChange={e => setSearchText(e.target.value)} /></div>
+             <div>
                <label>มหาวิทยาลัย</label>
                <select className="premium-input" value={filterUni} onChange={e => setFilterUni(e.target.value)}>
                  <option value="">ทั้งหมด</option>
                  {UNIVERSITY_LIST.map(uni => (<option key={uni} value={uni}>{uni}</option>))}
                </select>
              </div>
-             <div className="field">
-               <label>รอบที่ติด</label>
-               <select className="premium-input" value={filterRound} onChange={e => setFilterRound(e.target.value)}>
-                 <option value="">ทั้งหมด</option>
-                 <option value="1">รอบ 1 - Portfolio</option>
-                 <option value="2">รอบ 2 - Quota</option>
-                 <option value="3">รอบ 3 - Admission</option>
-               </select>
-             </div>
-             <div>
-               <button className="btn-main" style={{ height: '45px', padding: '0 24px' }} onClick={fetchPortfolios}>
-                 <Search size={18} /> ค้นหา
-               </button>
-             </div>
+             <div><label>รอบที่ติด</label><select className="premium-input" value={filterRound} onChange={e => setFilterRound(e.target.value)}><option value="">ทั้งหมด</option><option value="1">รอบ 1 - Portfolio</option><option value="2">รอบ 2 - Quota</option><option value="3">รอบ 3 Admission</option></select></div>
+             <div><button className="btn-search"><Search size={18} /> ค้นหา</button></div>
            </div>
 
            <div className="results-header">
-             <h3>ผลการค้นหาทั้งหมด</h3>
-             <span className="results-count">
-               แสดง {filteredData.length} รายการ
-             </span>
+             <h3>ผลการค้นหาทั้งหมด</h3><span className="results-count">แสดง {filteredData.length} รายการ</span>
            </div>
            
            {isLoading ? (
@@ -332,39 +296,26 @@ export default function App() {
            ) : (
              <div className="cards-grid">
                {filteredData.length === 0 ? (
-                 <div className="empty-state" style={{ gridColumn: '1/-1', background: 'white', borderRadius: '24px' }}>
-                   <div className="icon"><Search size={48} /></div>
-                   <h3>ยังไม่มีข้อมูลในระบบ</h3>
-                   <p>รอรุ่นพี่มาแชร์ประสบการณ์อยู่นะครับ!</p>
-                 </div>
+                 <div className="empty-state" style={{ gridColumn: '1/-1' }}><div className="icon"><Search size={48} /></div><h3>ยังไม่มีข้อมูลในระบบ</h3><p>รอรุ่นพี่มาแชร์ประสบการณ์อยู่นะครับ!</p></div>
                ) : (
                  filteredData.map(d => (
                    <div key={d.id} className="uni-card" style={{ position: 'relative' }} onClick={() => viewDetail(d.id)}>
-                     {/* ปุ่มกดดาวสีเหลืองทองอำพัน */}
                      <button 
-                        style={{ position: 'absolute', top: '12px', right: '12px', background: savedPorts.includes(d.id) ? '#fffbeb' : 'white', border: `1px solid ${savedPorts.includes(d.id) ? '#d97706' : '#e2e8f0'}`, width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                        style={{ position: 'absolute', top: '12px', right: '12px', background: savedPorts.includes(d.id) ? '#FFFDE7' : 'white', border: `1px solid ${savedPorts.includes(d.id) ? '#F5C842' : 'var(--gray2)'}`, width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                         onClick={(e) => toggleSavePort(e, d.id)}
                         title={savedPorts.includes(d.id) ? "ยกเลิกการบันทึก" : "บันทึกพอร์ตนี้"}
                       >
-                        <Star size={18} fill={savedPorts.includes(d.id) ? '#f59e0b' : 'none'} color={savedPorts.includes(d.id) ? '#d97706' : '#94a3b8'} />
+                        <Star size={18} fill={savedPorts.includes(d.id) ? '#F5C842' : 'none'} color={savedPorts.includes(d.id) ? '#F5C842' : '#94a3b8'} />
                       </button>
 
-                     <div className="card-top" style={{ padding: '1.5rem' }}>
+                     <div className="card-top">
                        <div><span className={`card-round r${d.round}`}>{d.round === '1' ? '⭐ รอบ 1' : d.round === '2' ? '📋 รอบ 2' : '📝 รอบ 3'}</span></div>
-                       <div className="card-faculty" style={{ paddingRight: '30px', fontSize: '1.15rem' }}>{d.faculty}</div>
-                       <div className="card-major" style={{ fontSize: '0.95rem' }}>{d.major}</div>
-                       <div className="card-uni" style={{marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem'}}>
-                         <School size={16}/> {d.uni}
-                       </div>
+                       <div className="card-faculty" style={{ paddingRight: '30px' }}>{d.faculty}</div>
+                       <div className="card-major">{d.major}</div>
+                       <div className="card-uni" style={{marginTop: '12px', display: 'flex', alignItems: 'center', gap: '6px'}}><School size={16} /> {d.uni}</div>
                      </div>
-                     <div className="card-bottom" style={{ padding: '1.2rem 1.5rem' }}>
-                       <div className="alumni-info">
-                         <div className="avatar" style={{ background: d.color, width: '40px', height: '40px', fontSize: '1.1rem' }}>{d.name.charAt(0)}</div>
-                         <div>
-                           <div className="alumni-name" style={{ fontSize: '0.95rem' }}>{d.name}</div>
-                           <div className="alumni-gen" style={{ fontSize: '0.8rem' }}>รุ่น {d.gen}</div>
-                         </div>
-                       </div>
+                     <div className="card-bottom">
+                       <div className="alumni-info"><div className="avatar" style={{ background: d.color }}>{d.name.charAt(0)}</div><div><div className="alumni-name">{d.name}</div><div className="alumni-gen">รุ่น {d.gen}</div></div></div>
                        <div className="card-assets">
                          {d.hasPort && <span className="asset-badge has-port" title="มี Portfolio"><FileText size={16} /></span>}
                          {d.hasVid && <span className="asset-badge has-vid" title="มีวิดีโอแนะนำตัว"><PlayCircle size={16} /></span>}
@@ -382,8 +333,8 @@ export default function App() {
       {/* ===== MY PROFILE PAGE (ตั้งค่า) ===== */}
       {page === 'profile' && currentUser && (
         <div className="profile-page-wrapper">
-          <div className="profile-header-banner" style={{ background: 'linear-gradient(135deg, #7f1d1d 0%, #0f172a 100%)' }}>
-            <div className="profile-avatar-large" style={{ background: 'var(--crimson)' }}>{currentUser.name.charAt(0)}</div>
+          <div className="profile-header-banner">
+            <div className="profile-avatar-large">{currentUser.name.charAt(0)}</div>
             <div className="profile-header-info">
               <h1>{currentUser.name}</h1>
               <p>
@@ -423,11 +374,11 @@ export default function App() {
             <div>
               {currentUser.role === 'student' ? (
                 <div className="profile-card">
-                  <h3 style={{ marginBottom: '20px', display:'flex', alignItems:'center', gap:'8px' }}><Star fill="#f59e0b" color="#d97706" size={24} /> พอร์ตโฟลิโอที่บันทึกไว้</h3>
+                  <h3 style={{ marginBottom: '20px', display:'flex', alignItems:'center', gap:'8px' }}><Star fill="#F5C842" color="#F5C842" size={24} /> พอร์ตโฟลิโอที่บันทึกไว้</h3>
                   
                   {savedPortfoliosData.length === 0 ? (
-                    <div className="empty-state" style={{ padding: '3rem 2rem', border: '1px dashed #cbd5e1', background: '#f8fafc', borderRadius: '16px' }}>
-                      <div className="icon"><Star size={48} color="#94a3b8" /></div>
+                    <div className="empty-state" style={{ padding: '3rem 2rem', border: '1px dashed var(--gray3)', background: 'var(--light)', borderRadius: '16px' }}>
+                      <div className="icon"><Star size={48} /></div>
                       <h4>ยังไม่มีพอร์ตโฟลิโอที่บันทึกไว้</h4>
                       <p style={{marginTop: '8px'}}>คุณสามารถกดไอคอนรูปดาวที่การ์ดของรุ่นพี่เพื่อเก็บไว้อ่านทีหลังได้ครับ</p>
                       <button className="btn-main" style={{ width: 'auto', padding: '10px 24px', marginTop: '1.5rem' }} onClick={() => setPage('home')}><Search size={18}/> ค้นหารุ่นพี่เลย</button>
@@ -437,10 +388,10 @@ export default function App() {
                       {savedPortfoliosData.map(d => (
                          <div key={d.id} className="uni-card" style={{ position: 'relative' }} onClick={() => viewDetail(d.id)}>
                             <button 
-                               style={{ position: 'absolute', top: '12px', right: '12px', background: '#fffbeb', border: '1px solid #f59e0b', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                               style={{ position: 'absolute', top: '12px', right: '12px', background: '#FFFDE7', border: '1px solid #F5C842', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                onClick={(e) => toggleSavePort(e, d.id)}
                              >
-                               <Star size={18} fill="#f59e0b" color="#d97706" />
+                               <Star size={18} fill="#F5C842" color="#F5C842" />
                              </button>
                             <div className="card-top">
                               <div><span className={`card-round r${d.round}`}>{d.round === '1' ? '⭐ รอบ 1' : d.round === '2' ? '📋 รอบ 2' : '📝 รอบ 3'}</span></div>
@@ -484,13 +435,13 @@ export default function App() {
               )}
             </div>
           </div>
-        </div>
+        </div>s
       )}
 
       {/* ===== DETAIL PAGE ===== */}
       {page === 'detail' && selectedAlumni && (
         <div className="detail-page-wrapper">
-          <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', background: 'linear-gradient(135deg, var(--crimson) 0%, #450a0a 100%)' }}>
+          <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
             <div>
               <button className="btn-back" onClick={() => setPage('home')}><ArrowLeft size={18} /> กลับหน้าหลัก</button>
               <div style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '8px', display: 'flex', gap: '8px' }}><span>{selectedAlumni.round === '1' ? '⭐ รอบ 1 Portfolio' : selectedAlumni.round === '2' ? '📋 รอบ 2 Quota' : '📝 รอบ 3 Admission'}</span></div>
@@ -500,14 +451,14 @@ export default function App() {
             <button 
               onClick={() => toggleSavePort(null, selectedAlumni.id)}
               style={{
-                background: savedPorts.includes(selectedAlumni.id) ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.1)',
-                border: `1.5px solid ${savedPorts.includes(selectedAlumni.id) ? '#f59e0b' : 'rgba(255,255,255,0.3)'}`,
-                color: savedPorts.includes(selectedAlumni.id) ? '#f59e0b' : 'white',
+                background: savedPorts.includes(selectedAlumni.id) ? 'rgba(255, 215, 0, 0.2)' : 'rgba(255,255,255,0.1)',
+                border: `1.5px solid ${savedPorts.includes(selectedAlumni.id) ? '#FFC107' : 'rgba(255,255,255,0.3)'}`,
+                color: savedPorts.includes(selectedAlumni.id) ? '#FFC107' : 'white',
                 padding: '10px 20px', borderRadius: '50px', cursor: 'pointer', display: 'flex', gap: '8px', alignItems: 'center', fontWeight: '600', fontSize: '0.95rem',
                 transition: 'all 0.2s', backdropFilter: 'blur(4px)'
               }}
             >
-              <Star size={18} fill={savedPorts.includes(selectedAlumni.id) ? '#f59e0b' : 'none'} color={savedPorts.includes(selectedAlumni.id) ? '#f59e0b' : 'white'} />
+              <Star size={18} fill={savedPorts.includes(selectedAlumni.id) ? '#FFC107' : 'none'} />
               {savedPorts.includes(selectedAlumni.id) ? 'บันทึกแล้ว' : 'บันทึกพอร์ตนี้'}
             </button>
           </div>
@@ -523,7 +474,7 @@ export default function App() {
                 </div>
                 <hr className="section-sep" />
                 <div className="advice-box" style={{ padding: 0, background: 'transparent', border: 'none' }}>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--crimson)', marginBottom: '16px', display:'flex', alignItems:'center', gap:'8px' }}><Info size={20}/> คำแนะนำจากพี่ถึงน้อง</h4>
+                  <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--teal)', marginBottom: '16px', display:'flex', alignItems:'center', gap:'8px' }}><Info size={20}/> คำแนะนำจากพี่ถึงน้อง</h4>
                   <p style={{ fontSize: '1.05rem', color: 'var(--text)', lineHeight: 1.8 }}>{selectedAlumni.advice}</p>
                 </div>
               </div>
@@ -542,8 +493,8 @@ export default function App() {
                     <h3 className="media-title" style={{display:'flex', alignItems:'center', gap:'8px'}}><FileText size={24}/> Portfolio ฉบับเต็ม</h3>
                     <a href={selectedAlumni.driveLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                       <div className="port-box" style={{ background: 'var(--white)', border: '1px solid var(--gray2)', boxShadow: 'var(--shadow-sm)' }}>
-                        <div className="port-icon pdf" style={{display:'flex', alignItems:'center', justifyContent:'center', color: 'var(--crimson)'}}><FileText size={32} /></div>
-                        <div className="port-info"><h4>Portfolio_{selectedAlumni.name.replace(' ', '_')}</h4><p style={{ color: 'var(--crimson)', fontWeight: '500' }}>คลิกเพื่อเปิดดูไฟล์ผ่าน Google Drive</p></div>
+                        <div className="port-icon pdf" style={{display:'flex', alignItems:'center', justifyContent:'center'}}><FileText size={32} /></div>
+                        <div className="port-info"><h4>Portfolio_{selectedAlumni.name.replace(' ', '_')}</h4><p style={{ color: 'var(--teal)', fontWeight: '500' }}>คลิกเพื่อเปิดดูไฟล์ผ่าน Google Drive</p></div>
                       </div>
                     </a>
                  </div>
@@ -563,7 +514,7 @@ export default function App() {
       {/* ===== REGISTER PAGE ===== */}
       {page === 'register' && (
         <div className="auth-page-container">
-          <div className="auth-banner" style={{ background: 'linear-gradient(135deg, #450a0a 0%, var(--crimson) 100%)' }}>
+          <div className="auth-banner">
             <div className="auth-banner-content">
               <div style={{ marginBottom: '1rem', color:'white' }}><School size={64} /></div>
               <h1>สร้างบัญชี<br />NMRSW Buddy</h1>
@@ -572,7 +523,7 @@ export default function App() {
           </div>
           <div className="auth-content">
             <div className="auth-card">
-              <div className="auth-logo"><h2>สมัครสมาชิกฟรี</h2><p style={{ color: 'var(--text2)', fontSize: '0.95rem' }}>กรุณากรอกข้อมูลเพื่อสร้างบัญชีผู้ใช้ใหม่</p></div>
+              <div className="auth-logo"><h2>สมัครสมาชิก</h2><p style={{ color: 'var(--text2)', fontSize: '0.95rem' }}>กรุณากรอกข้อมูลเพื่อสร้างบัญชีผู้ใช้ใหม่</p></div>
               <div className="step-bar" style={{ marginBottom: '2rem' }}><div className={`step ${regStep >= 1 ? 'active' : ''} ${regStep > 1 ? 'done' : ''}`}></div><div className={`step ${regStep >= 2 ? 'active' : ''} ${regStep > 2 ? 'done' : ''}`}></div><div className={`step ${regStep === 3 ? 'active done' : ''}`}></div></div>
 
               {regStep === 1 && (
@@ -606,7 +557,7 @@ export default function App() {
                   {regRole === 'alumni' && (
                     <div style={{ animation: 'slideUp 0.3s ease', marginTop: '1.5rem' }}>
                       <div className="field"><label>รุ่นที่จบ</label><select className="premium-input" value={regGen} onChange={(e) => setRegGen(e.target.value)}><option value="">เลือกรุ่นที่จบ...</option><option value="30">รุ่น 30</option><option value="31">รุ่น 31</option><option value="32">รุ่น 32</option></select></div>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text2)', background: '#fff5f5', padding: '10px', borderRadius: '8px', display:'flex', alignItems:'center', gap:'8px', border: '1px solid #fee2e2' }}><Info size={16} color="var(--crimson)"/> ข้อมูลมหาวิทยาลัยและ Portfolio สามารถเพิ่มได้ในหน้าตั้งค่าหลังจากการสมัครเสร็จสิ้นครับ</p>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text2)', background: 'var(--gray1)', padding: '10px', borderRadius: '8px', display:'flex', alignItems:'center', gap:'8px' }}><Info size={16}/> ข้อมูลมหาวิทยาลัยและ Portfolio สามารถเพิ่มได้ในหน้าตั้งค่าหลังจากการสมัครเสร็จสิ้นครับ</p>
                     </div>
                   )}
 
@@ -619,13 +570,13 @@ export default function App() {
 
               {regStep === 3 && (
                 <div style={{ textAlign: 'center', padding: '2rem 0', animation: 'fadeIn 0.5s ease' }}>
-                  <div style={{ marginBottom: '1rem', color:'var(--crimson)', display:'flex', justifyContent:'center' }}><CheckCircle size={64} /></div>
-                  <h2 style={{ color: 'var(--crimson)', marginBottom: '0.5rem', fontFamily: "'Prompt', sans-serif" }}>ยินดีต้อนรับ!</h2>
+                  <div style={{ marginBottom: '1rem', color:'var(--teal)', display:'flex', justifyContent:'center' }}><CheckCircle size={64} /></div>
+                  <h2 style={{ color: 'var(--teal)', marginBottom: '0.5rem', fontFamily: "'Prompt', sans-serif" }}>ยินดีต้อนรับ!</h2>
                   <p style={{ color: 'var(--text2)', fontSize: '1rem', marginBottom: '2rem' }}>บัญชีของคุณพร้อมใช้งานแล้ว</p>
                   <button className="btn-main" onClick={() => setPage('home')}><Home size={18} /> เข้าสู่หน้าหลัก</button>
                 </div>
               )}
-              <div className="alt-link" style={{ marginTop: '2rem' }}>มีบัญชีอยู่แล้ว? <button onClick={() => setPage('login')} style={{ background: 'none', border: 'none', color: 'var(--crimson)', cursor: 'pointer', fontWeight: 700 }}>เข้าสู่ระบบ</button></div>
+              <div className="alt-link" style={{ marginTop: '2rem' }}>มีบัญชีอยู่แล้ว? <button onClick={() => setPage('login')} style={{ background: 'none', border: 'none', color: 'var(--teal)', cursor: 'pointer', fontWeight: 700 }}>เข้าสู่ระบบ</button></div>
             </div>
           </div>
         </div>
@@ -634,7 +585,7 @@ export default function App() {
       {/* ===== LOGIN PAGE ===== */}
       {page === 'login' && (
         <div className="auth-page-container">
-          <div className="auth-banner" style={{ background: 'linear-gradient(135deg, #450a0a 0%, var(--crimson) 100%)' }}>
+          <div className="auth-banner">
             <div className="auth-banner-content">
               <div style={{ marginBottom: '1rem', color:'white' }}><LogIn size={64} /></div>
               <h1>ยินดีต้อนรับ<br />กลับมาอีกครั้ง</h1>
@@ -648,14 +599,14 @@ export default function App() {
               <div className="field" style={{ marginBottom: '0.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                   <label style={{ marginBottom: 0 }}>รหัสผ่าน</label>
-                  <button style={{ background: 'none', border: 'none', color: 'var(--crimson)', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600 }}>ลืมรหัสผ่าน?</button>
+                  <button style={{ background: 'none', border: 'none', color: 'var(--teal)', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600 }}>ลืมรหัสผ่าน?</button>
                 </div>
                 <input type="password" className="premium-input" placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
               </div>
               <button className="btn-main" style={{ marginTop: '2rem' }} onClick={doLogin}><LogIn size={18} /> เข้าสู่ระบบ</button>
               <div className="alt-link" style={{ marginTop: '2rem' }}>
                 ยังไม่มีบัญชีใช่ไหม?{' '}
-                <button onClick={() => { setPage('register'); setRegStep(1); }} style={{ background: 'none', border: 'none', color: 'var(--crimson)', cursor: 'pointer', fontWeight: 700 }}>สมัครสมาชิกฟรี</button>
+                <button onClick={() => { setPage('register'); setRegStep(1); }} style={{ background: 'none', border: 'none', color: 'var(--teal)', cursor: 'pointer', fontWeight: 700 }}>สมัครสมาชิกฟรี</button>
               </div>
             </div>
           </div>
